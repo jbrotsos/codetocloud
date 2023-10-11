@@ -9,50 +9,9 @@ jobs:
   steps:
   - task: Docker@2
     inputs:
-      containerRegistry: $(WoodGroveRegistry)
+      containerRegistry: $(WoodgroveRegistry)
       repository: 'vulnerableContainer'
       command: 'buildAndPush'
       Dockerfile: '**/Dockerfile'
       tags: |   
        $(Build.BuildId)
-
-- job: deploy_to_aks
-  dependsOn: build_image
-  steps:
-  - task: Kubernetes@1
-    displayName: 'Deploy to AKS'
-    inputs:
-      connectionType: 'Azure Resource Manager'
-      azureSubscriptionEndpoint: 'Woodgrove'
-      azureResourceGroup: 'SOC-AKS'
-      kubernetesCluster: 'contoso-aks-prd'  
-      namespace: 'mdc-contoso-demo'  
-      command: 'apply'
-      useConfigurationFile: true
-      configurationType: 'inline'
-      inline: |
-        apiVersion: apps/v1
-        kind: Deployment
-        metadata:
-          name: dfd-demo-6b8bf54bcb-6p54v
-          generateName: dfd-demo-6b8bf54bcb-
-          namespace: 'mdc-contoso-demo' 
-        spec:
-          replicas: 3
-          selector:
-            matchLabels:
-              app: dfd-demo
-              appName: contoso
-              releaseNumber: '4'
-          template:
-            metadata:
-              labels:
-                app: dfd-demo
-                appName: contoso
-                releaseNumber: '4'
-            spec:
-              containers:
-              - name: defenderdevopscontainer01
-                image: contosoregistry01.azurecr.io/$(repo):$(Build.BuildId)
-                ports:
-                - containerPort: 80
