@@ -1,0 +1,21 @@
+trigger:
+- 'main'
+  
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+  - task: Docker@2
+    inputs:
+      repository: 'vulnerablecontainer'
+      command: 'build'
+      Dockerfile: '**/Dockerfile'
+      tags: 'latest'
+  
+  - task: MicrosoftSecurityDevOps@1
+    displayName: 'Microsoft Security DevOps' 
+    inputs: 
+      tools: 'trivy'
+    env:
+      trivy_action: 'image'
+      trivy_target: 'vulnerablecontainer'
