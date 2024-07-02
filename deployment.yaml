@@ -1,18 +1,18 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: mdc-dcspm-demo
+  name: mdc-dcspm-demo1
 ---
 apiVersion: v1
 kind: Pod
 metadata:
-  name: genaidemo1
+  name: vulnerablecontainer1
   namespace: mdc-dcspm-demo
   labels:
     app: demo-1
 spec:
   containers:
-  - name: genaicontainer1
+  - name: vulnerablecontainer1
     image: IMAGE_NAME_PLACEHOLDER
     ports:
     - name: http
