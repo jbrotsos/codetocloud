@@ -1,6 +1,8 @@
 trigger: none
 
 variables:
+  containerRegistry: 'woodgroveimages.azurecr.io'
+  imageName: 'vulnerablecontainerdemo'
   tag: '$(Build.BuildId)'
 
 stages:
@@ -16,7 +18,7 @@ stages:
           displayName: 'Build and Push Docker image'
           inputs:
             containerRegistry: 'WoodgroveRegistry'
-            repository: 'vulnerablecontainerdemo'
+            repository: '$(imageName)'
             command: 'buildAndPush'
             Dockerfile: '**/Dockerfile'
             tags: |
