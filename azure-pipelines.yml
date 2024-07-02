@@ -37,7 +37,7 @@ stages:
       - task: AzureCLI@2
         displayName: 'Update and Deploy Deployment YAML'
         inputs:
-          azureSubscription: 'CyberSecSOC(d1d8779d-38d7-4f06-91db-9cbc8de0176f)'
+          azureSubscription: 'Woodgrove'
           scriptType: 'bash'
           scriptLocation: 'inlineScript'
           inlineScript: |
