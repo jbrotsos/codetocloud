@@ -1,7 +1,7 @@
 trigger: none
 
 variables:
-  containerRegistry: 'woodgroveimages.azurecr.io'
+  containerRegistry: 'woodgrovecontainerreg.azurecr.io'
   imageName: 'vulnerablecontainerdemo1'
   tag: '$(Build.BuildId)'
 
