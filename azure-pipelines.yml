@@ -2,7 +2,7 @@ trigger: none
 
 variables:
   containerRegistry: 'woodgrovecontainerreg.azurecr.io'
-  imageName: 'vulnerablecontainerdemo1'
+  imageName: 'vulnerablecontainerdemo13'
   tag: '$(Build.BuildId)'
 
 stages:
