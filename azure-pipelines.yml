@@ -1,7 +1,6 @@
 trigger: none
 
 variables:
-  containerRegistry: 'woodgrovecontainerreg.azurecr.io'
   imageName: 'vulnerablecontainerdemo13'
   tag: '$(Build.BuildId)'
 
@@ -17,7 +16,7 @@ stages:
         - task: Docker@2
           displayName: 'Build and Push Docker image'
           inputs:
-            containerRegistry: 'Woodgrove-woodgroveContainerReg'
+            containerRegistry: 'alpineRegistry'
             repository: '$(imageName)'
             command: 'buildAndPush'
             Dockerfile: '**/Dockerfile'
@@ -39,12 +38,12 @@ stages:
       - task: AzureCLI@2
         displayName: 'Update and Deploy Deployment YAML'
         inputs:
-          azureSubscription: 'Woodgrove'
+          azureSubscription: 'Alpine'
           scriptType: 'bash'
           scriptLocation: 'inlineScript'
           inlineScript: |
             #!/bin/bash
-            az aks get-credentials --resource-group woodgrove-MDC-RG --name woodgrove-k8-MDC
+            az aks get-credentials --resource-group Alpine-MDC-RG --name alpine-k8-MDC
             fullImageName=$(containerRegistry)/$(imageName):$(tag)
             sed -i "s|IMAGE_NAME_PLACEHOLDER|$fullImageName|g" deployment.yaml
             kubectl apply -f deployment.yaml --validate=false
