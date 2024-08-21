@@ -1,7 +1,7 @@
 trigger: none
 
 variables:
-  imageName: 'vulnerablecontainerdemo13'
+  imageName: 'vulnerablecontainerdemo1'
   tag: '$(Build.BuildId)'
 
 stages:
