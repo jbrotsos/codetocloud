@@ -11,3 +11,5 @@ pool:
 
 steps:
 - task: MicrosoftSecurityDevOps@1
+  inputs:
+    tools: 'terrascan'
