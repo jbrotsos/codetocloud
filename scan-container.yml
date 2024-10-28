@@ -1,0 +1,38 @@
+trigger: none
+
+pool:
+  vmImage: "ubuntu-latest"
+
+variables:
+- group: tenant-variables
+
+steps:
+- bash: |
+    echo "Downloading latest version of endorctl"
+    VERSION=$(curl https://api.endorlabs.com/meta/version | grep -o '"Version":"[^"]*"' | sed 's/.*"Version":"\([^"]*\)".*/\1/')
+    curl https://storage.googleapis.com/endorlabs/"$VERSION"/binaries/endorctl_"$VERSION"_linux_amd64 -o endorctl
+    echo "$(curl -s https://api.endorlabs.com/sha/latest/endorctl_linux_amd64)  endorctl" | sha256sum -c
+    if [ $? -ne 0 ]; then
+      echo "Integrity check failed"
+      exit 1
+    fi
+    chmod +x ./endorctl
+    alias endorctl="$PWD/endorctl"    
+
+- task: Maven@4
+  inputs:
+    mavenPomFile: 'pom.xml'
+    publishJUnitResults: false
+    javaHomeOption: 'JDKVersion'
+    mavenVersionOption: 'Default'
+    mavenAuthenticateFeed: false
+    effectivePomSkip: false
+    sonarQubeRunAnalysis: false
+
+- script: |
+    ./endorctl scan -n $(NAMESPACE) -s scanresults.sarif    
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: 'scanresults.sarif'
+    ArtifactName: 'CodeAnalysisLogs'
