@@ -19,15 +19,10 @@ steps:
     chmod +x ./endorctl
     alias endorctl="$PWD/endorctl"    
 
-- task: Maven@4
-  inputs:
-    mavenPomFile: 'pom.xml'
-    publishJUnitResults: false
-    javaHomeOption: 'JDKVersion'
-    mavenVersionOption: 'Default'
-    mavenAuthenticateFeed: false
-    effectivePomSkip: false
-    sonarQubeRunAnalysis: false
+- script: |
+    python -m pip install --upgrade pip
+    pip install -r requirements.txt
+  displayName: 'Install dependencies'
 
 - script: |
     ./endorctl scan -n $(NAMESPACE) -s scanresults.sarif    
