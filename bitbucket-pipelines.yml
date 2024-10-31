@@ -15,13 +15,25 @@ pipelines:
     - step:
           name: 'MSDO trivy test'
           script:
-            - curl -L -o ./msdo_linux.zip https://www.nuget.org/api/v2/package/Microsoft.Security.DevOps.Cli.linux-x64/
-            - unzip ./msdo_linux.zip
-            - chmod +x tools/guardian
-            - chmod +x tools/Microsoft.Guardian.Cli
+            - unzip ./linux-x64.zip
+            - chmod +x linux-x64/guardian
+            - chmod +x linux-x64/Microsoft.Guardian.Cli
             - ls -lah .
-            - tools/guardian init --force
-            - tools/guardian run -t trivy --export-file ./ubuntu-test.sarif --publish-file-folder-path ./ubuntu-test.sarif
+            - linux-x64/guardian init --force
+            - linux-x64/guardian run -t trivy --export-file ./ubuntu-test.sarif --publish-file-folder-path ./ubuntu-test.sarif
+
+# pipelines:
+#   default:
+#     - parallel:
+#       - step:
+#           name: 'MSDO trivy test'
+#           script:
+#             - unzip ./linux-x64.zip
+#             - chmod +x linux-x64/guardian
+#             - chmod +x linux-x64/Microsoft.Guardian.Cli
+#             - ls -lah .
+#             - linux-x64/guardian init --force
+#             - linux-x64/guardian run -t trivy --export-file ./ubuntu-test.sarif --publish-file-folder-path ./ubuntu-test.sarif
       
 
 #trigger: none
