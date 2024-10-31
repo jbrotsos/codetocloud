@@ -2,8 +2,17 @@ image: atlassian/default-image:3
  
 pipelines:
   default:
-    - parallel:
-      - step:
+    - step:
+          name: 'Build Docker'
+          image: docker:stable
+          services:
+            - docker
+          script:
+            - docker build -t my-docker-repo/my-image-name:my-tag .
+            - docker login -u $DOCKER_USERNAME -p $DOCKER_PASS
+            - docker push my-docker-repo/my-image-name:my-tag
+  
+    - step:
           name: 'MSDO trivy test'
           script:
             - curl -L -o ./msdo_linux.zip https://www.nuget.org/api/v2/package/Microsoft.Security.DevOps.Cli.linux-x64/
@@ -13,16 +22,7 @@ pipelines:
             - ls -lah .
             - tools/guardian init --force
             - tools/guardian run -t trivy --export-file ./ubuntu-test.sarif --publish-file-folder-path ./ubuntu-test.sarif
-      - step:
-          name: 'Build Docker'
-          image: docker:stable
-          services:
-            - docker
-          script:
-            - docker build -t my-docker-repo/my-image-name:my-tag .
-            - docker login -u $DOCKER_USERNAME -p $DOCKER_PASS
-            - docker push my-docker-repo/my-image-name:my-tag
-
+      
 
 #trigger: none
 
