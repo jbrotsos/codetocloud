@@ -1,0 +1,79 @@
+image: atlassian/default-image:3
+ 
+pipelines:
+  default:
+    - parallel:
+      - step:
+          name: 'MSDO trivy test'
+          script:
+            - curl -L -o ./msdo_linux.zip https://www.nuget.org/api/v2/package/Microsoft.Security.DevOps.Cli.linux-x64/
+            - unzip ./msdo_linux.zip
+            - chmod +x tools/guardian
+            - chmod +x tools/Microsoft.Guardian.Cli
+            - ls -lah .
+            - tools/guardian init --force
+            - tools/guardian run -t trivy --export-file ./ubuntu-test.sarif --publish-file-folder-path ./ubuntu-test.sarif
+      - step:
+          name: 'Build Docker'
+          image: docker:stable
+          services:
+            - docker
+          script:
+            - docker build -t my-docker-repo/my-image-name:my-tag .
+            - docker login -u $DOCKER_USERNAME -p $DOCKER_PASS
+            - docker push my-docker-repo/my-image-name:my-tag
+
+
+#trigger: none
+
+#variables:
+#  imageName: 'runningvulnerablecontainer1'
+#  tag: '$(Build.BuildId)'
+
+#stages:
+#  - stage: Build
+#    displayName: 'Build and Push Image'
+#    jobs:
+#      - job: Build
+#        displayName: 'Build'
+#        pool:
+#          vmImage: 'ubuntu-latest'
+#        steps:
+#        - task: Docker@2
+#          displayName: 'Build and Push Docker image'
+#          inputs:
+#            containerRegistry: 'alpineRegistry'
+#            repository: '$(imageName)'
+#            command: 'buildAndPush'
+#            Dockerfile: '**/Dockerfile'
+#            tags: |
+#              $(tag)
+  
+#  - stage: Deploy
+#    displayName: 'Deploy to Kubernetes'
+#    dependsOn: Build
+#    condition: succeeded()
+#    jobs:
+#    - job: Deploy
+#      displayName: 'Deploy'
+#      pool:
+#        vmImage: 'ubuntu-latest'
+#      steps:
+#      - checkout: self
+      
+#      - task: AzureCLI@2
+#        displayName: 'Update and Deploy Deployment YAML'
+#        inputs:
+#          azureSubscription: 'Alpine'
+#          scriptType: 'bash'
+#          scriptLocation: 'inlineScript'
+#          inlineScript: |
+            #!/bin/bash
+#            az aks get-credentials --resource-group Alpine-MDC-RG --name alpine-k8-MDC
+#            fullImageName=$(containerRegistry)/$(imageName):$(tag)
+#            sed -i "s|IMAGE_NAME_PLACEHOLDER|$fullImageName|g" deployment.yaml
+#            kubectl apply -f deployment.yaml --validate=false
+#          arguments: |
+#            --containerRegistry $(containerRegistry)
+#            --imageName $(imageName)
+#            --tag $(tag)
