@@ -9,8 +9,11 @@ pipelines:
             - docker
           script:
             - docker build -t jabrotsos/vuln-container:1.0 .
+            - docker build -t vulnerabledockerhub/app-java-demo:114 .
             - docker login -u $DOCKER_USERNAME -p $DOCKER_PASS
+            #- docker login -u $FUTURE_DOCKER_USERNAME -p $FUTURE_DOCKER_PASS
             - docker push jabrotsos/vuln-container:1.0
+            - docker push vulnerabledockerhub/app-java-demo:114
   
     - step:
           name: 'MSDO trivy test'
@@ -23,6 +26,20 @@ pipelines:
             - tools/guardian init --force
             - tools/guardian run -t trivy --export-file ./ubuntu-test.sarif --publish-file-folder-path ./ubuntu-test.sarif
       
+    - step:
+          name: Deploy to AKS
+          deployment: production
+    # trigger: manual  # Uncomment to make this a manual deployment.
+          script:
+           - pipe: atlassian/azure-aks-deploy:1.4.0
+             variables:
+              AZURE_APP_ID: $AZURE_APP_ID
+              AZURE_PASSWORD: $AZURE_PASSWORD
+              AZURE_TENANT_ID: $AZURE_TENANT_ID
+              AZURE_AKS_NAME: $AKSCLUSTER
+              AZURE_RESOURCE_GROUP: $RESOURCEGROUP
+              KUBECTL_COMMAND: 'apply'
+              KUBECTL_ARGUMENTS: '-f deploy.yml'
 
 #trigger: none
 
