@@ -9,11 +9,11 @@ pipelines:
             - docker
           script:
             - docker build -t jabrotsos/vuln-container:1.0 .
-            - docker build -t vulnerabledockerhub/app-java-demo:114 .
+            - docker build -t vulnerabledockerhub/vuln-container:james .
             - docker login -u $DOCKER_USERNAME -p $DOCKER_PASS
             #- docker login -u $FUTURE_DOCKER_USERNAME -p $FUTURE_DOCKER_PASS
             - docker push jabrotsos/vuln-container:1.0
-            - docker push vulnerabledockerhub/app-java-demo:114
+            - docker push vulnerabledockerhub/vuln-container:114
   
     - step:
           name: 'MSDO trivy test'
